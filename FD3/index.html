@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Feliz Cumpleaños!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background-color: #f4e8ff;
+      background-image: 
+        url('https://www.transparenttextures.com/patterns/stardust.png'),
+        radial-gradient(circle at center, #fbf7ff 0%, #e9d5ff 100%);
+      font-family: 'Quicksand', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+      padding: 40px 20px; 
+      z-index: 0; 
+    }
+
+    .bg-shapes {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -1; 
+      overflow: hidden;
+      pointer-events: none; 
+    }
+
+    .shape {
+      position: absolute;
+      opacity: 0.7;
+      animation: floatShape 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatShape {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(-25px) scale(1.05); }
+    }
+
+    .s-1 { bottom: 15%; left: 5%; animation-delay: 0s; }
+    .s-2 { top: 15%; right: 20%; animation-delay: 1.5s; }
+    .s-3 { bottom: 20%; right: 5%; animation-delay: 3s; }
+    .s-4 { top: 20%; left: 10%; animation-delay: 0.5s; }
+
+    .css-moon {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      box-shadow: 15px 15px 0 0 #d6bcfa; 
+    }
+    .css-star {
+      width: 45px; height: 45px;
+      background: #b794f4;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+    .css-heart {
+      width: 35px; height: 35px;
+      background-color: #9f7aea;
+      transform: rotate(-45deg);
+      margin-top: 15px; 
+    }
+    .css-heart::before, .css-heart::after {
+      content: "";
+      width: 35px; height: 35px;
+      background-color: #9f7aea;
+      border-radius: 50%;
+      position: absolute;
+    }
+    .css-heart::before { top: -17px; left: 0; }
+    .css-heart::after { left: 17px; top: 0; }
+
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 2.5rem;
+      border-radius: 28px;
+      text-align: center;
+      max-width: 600px; 
+      width: 100%;
+      box-shadow: 0 15px 35px rgba(128, 90, 213, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      z-index: 10;
+      transition: all 0.5s ease;
+      position: relative;
+      margin: auto;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 15px; left: 15px; right: 15px; bottom: 15px;
+      border: 2px dashed #d6bcfa;
+      border-radius: 18px;
+      pointer-events: none; 
+    }
+
+    h1 {
+      font-family: 'Fredoka', cursive;
+      color: #805ad5;
+      font-size: 2.4rem;
+      margin-bottom: 1.2rem;
+    }
+
+    p.question {
+      color: #6b46c1;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+    }
+
+    .character-img {
+      width: 170px; height: 170px; object-fit: contain;
+      margin: 0 auto 1.2rem; display: block;
+      animation: pulse 2.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    .buttons-container {
+      display: flex; justify-content: center; align-items: center; gap: 1.5rem; min-height: 60px;
+    }
+    
+    button {
+      font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 1.15rem;
+      padding: 0.75rem 2.2rem; border-radius: 50px; cursor: pointer; transition: all 0.25s ease;
+    }
+    
+    #btn-yes {
+      background-color: #b794f4; color: #ffffff; border: 2px solid #9f7aea; box-shadow: 0 4px 12px rgba(183, 148, 244, 0.4);
+    }
+    #btn-yes:hover { background-color: #9f7aea; transform: scale(1.08); }
+    
+    #btn-no {
+      background-color: #faf5ff; color: #805ad5; border: 2px solid #e9d5ff; position: relative;
+    }
+
+    .sparkle {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: twinkle 2s ease-in-out infinite alternate;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.3; transform: scale(0.8) translateY(0px); }
+      100% { opacity: 1; transform: scale(1.2) translateY(-10px); }
+    }
+
+    .surprise-container {
+      display: none; 
+      flex-direction: column;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 600px;
+      z-index: 10;
+      animation: fadeIn 0.8s ease-in-out forwards;
+      margin: auto;
+    }
+
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(15px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+
+    .surprise-title {
+      text-align: center; 
+      color: #805ad5; 
+      font-family: 'Fredoka', cursive; 
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .content-box {
+      border-radius: 24px;
+      padding: 1.8rem;
+      box-shadow: 0 10px 25px rgba(128, 90, 213, 0.12);
+      transition: transform 0.3s ease;
+    }
+
+    .hidden-step {
+      display: none;
+      animation: fadeIn 0.8s ease-in-out forwards;
+    }
+
+    .btn-next {
+      background-color: #9f7aea;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: block;
+      margin: 1.5rem auto 0;
+      box-shadow: 0 4px 12px rgba(159, 122, 234, 0.3);
+    }
+    .btn-next:hover {
+      background-color: #805ad5;
+      transform: scale(1.05);
+    }
+
+    .letter-box {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px dashed #b794f4;
+      color: #553c9a;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    /* --- BLOQUE 2: REGALOS Y SELECCIÓN --- */
+    .gifts-box {
+      background: rgba(233, 213, 255, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    
+    /* Cuadrícula 2x2 para los 4 regalos */
+    .gifts-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+      max-width: 380px; /* Ancho perfecto para celular */
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .gift-box {
+      background: #faf5ff; 
+      border: 2px dashed #b794f4; 
+      border-radius: 12px;
+      padding: 1rem 0.5rem; 
+      width: calc(50% - 0.5rem); /* Ocupan mitad y mitad */
+      text-align: center; 
+      transition: all 0.3s ease;
+      cursor: pointer; /* Muestra la manita para que sepa que es clicable */
+      position: relative;
+    }
+
+    .gift-box:hover { transform: translateY(-5px); background: #f3e8ff; }
+    
+    /* MAGIA PARA LAS IMÁGENES: No se desbordan y se ajustan al centro */
+    .gift-img { 
+      width: 100%; 
+      height: 75px; 
+      object-fit: contain; 
+      margin-bottom: 8px; 
+      pointer-events: none; /* Evita arrastrar la imagen por error */
+    }
+    
+    .gift-text { font-size: 0.85rem; color: #6b46c1; font-weight: 700; }
+
+    /* ESTILOS INTERACTIVOS (Seleccionado / Bloqueado) */
+    .gift-box.selected {
+      border: 2px solid #805ad5;
+      background: #e9d5ff;
+      box-shadow: 0 4px 12px rgba(128, 90, 213, 0.3);
+      transform: translateY(-5px);
+    }
+
+    .gift-box.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      filter: grayscale(80%);
+    }
+
+    .gift-box.disabled:hover {
+      transform: none;
+      background: #faf5ff;
+    }
+
+    .selection-info {
+      text-align: center;
+      font-weight: bold;
+      color: #805ad5;
+      margin-bottom: 5px;
+    }
+
+    /* Botón desactivado hasta que elija 2 */
+    #btn-show-form:disabled {
+      background-color: #d6bcfa;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .shipping-form { display: flex; flex-direction: column; gap: 12px; margin-top: 1rem; }
+    
+    .shipping-form input {
+      padding: 12px; border-radius: 8px; border: 1px solid #e9d5ff; font-family: 'Quicksand', sans-serif;
+      font-size: 0.95rem; outline: none; transition: 0.3s;
+    }
+    .shipping-form input:focus { border-color: #b794f4; box-shadow: 0 0 5px rgba(183, 148, 244, 0.4); }
+    
+    .btn-submit {
+      background-color: #805ad5; color: white; border: none; padding: 12px; border-radius: 8px;
+      font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 5px;
+    }
+    .btn-submit:hover { background-color: #6b46c1; }
+    
+    .extra-img { width: 100px; margin: 1rem auto 0; display: block; border-radius: 12px; }
+
+    /* --- ESTILOS DE LAS DALIAS --- */
+    #dahlia-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -2; 
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .dahlia-wrapper {
+      position: absolute;
+    }
+
+    .dahlia {
+      position: relative;
+      transform: scale(0);
+      opacity: 0;
+      animation: bloom 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .petal {
+      position: absolute;
+      bottom: 50%; left: 50%;
+      width: 16px; height: 50px;
+      margin-left: -8px; 
+      background: linear-gradient(to bottom, #d6bcfa, #9f7aea);
+      border-radius: 50% 50% 15% 15%;
+      transform-origin: bottom center;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    }
+    .petal.inner {
+      height: 35px;
+      width: 12px;
+      margin-left: -6px;
+      background: linear-gradient(to bottom, #f3e8ff, #b794f4);
+    }
+
+    .dahlia-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 22px; height: 22px;
+      background: #f6e05e; 
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    .leaf {
+      position: absolute;
+      bottom: 50%; left: 50%;
+      width: 22px; height: 65px; 
+      margin-left: -11px;
+      background: linear-gradient(to bottom, #74a998, #86bd9a); 
+      border-radius: 50% 50% 15% 15%;
+      transform-origin: bottom center;
+      z-index: -1; 
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    @keyframes bloom {
+      0% { transform: scale(0) rotate(-90deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+    }
+
+    /* --- RESPONSIVE CELULAR --- */
+    @media (max-width: 768px) {
+      .css-moon { width: 40px; height: 40px; box-shadow: 12px 12px 0 0 #d6bcfa; }
+      .css-star { width: 35px; height: 35px; }
+      .css-heart { width: 25px; height: 25px; margin-top: 10px; }
+      .css-heart::before, .css-heart::after { width: 25px; height: 25px; }
+      .css-heart::before { top: -12px; }
+      .css-heart::after { left: 12px; }
+      .gift-box { width: 100px; padding: 0.8rem; }
+      .gift-icon { font-size: 1.5rem; }
+      .gift-text { font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="dahlia-container"></div>
+  <div class="bg-shapes">
+    <div class="shape css-moon s-1"></div>
+    <div class="shape css-star s-2"></div>
+    <div class="shape css-heart s-3"></div>
+    <div class="shape css-star s-4"></div>
+  </div>
+
+  <div class="card" id="main-card">
+    <div id="initial-view">
+      <span class="sparkle" style="top: 10%; left: 15%;">⭐</span>
+      <span class="sparkle" style="top: 5%; right: 15%; font-size: 1.5rem; animation-delay: 1s;">✨</span>
+      <span class="sparkle" style="bottom: 17%; left: 15%; font-size: 2rem; animation-delay: 0.5s;">✨</span>
+      <span class="sparkle" style="bottom: 20%; right: 20%; font-size: 1.2rem; animation-delay: 1.5s;">⭐</span>
+      <span class="sparkle" style="top: 25%; left: 5%;">✨</span>
+      <span class="sparkle" style="bottom: 10%; right: 5%; font-size: 1.5rem; animation-delay: 1s;">✨</span>
+      <span class="sparkle" style="top: 40%; right: 80%; font-size: 1.5rem; animation-delay: 1s;">✨</span>
+      <span class="sparkle" style="top: 45%; right: 20%; font-size: 1.5rem; animation-delay: 1s;">✨</span>
+      
+      <h1>¡Feliz Cumpleaños!</h1>
+      <img src="imagenes/OsoRm2.png" alt="OsoRm" class="character-img"> 
+      <p class="question">¿Quieres ver el regalo que hice para ti?</p>
+      <div class="buttons-container">
+        <button id="btn-yes">Sí</button>
+        <button id="btn-no">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="surprise-container" id="gift-view">
+    
+    <audio id="bg-music" loop>
+      <source src="https://files.catbox.moe/32mi3v.mp3" type="audio/mpeg">
+    </audio>
+
+    <h2 class="surprise-title">¡Sorpresa! 🌙💜🎊</h2>
+
+    <div class="content-box letter-box" id="step-1">
+      <p><strong>¡Hola! 👋</strong></p><br>
+      <p>
+        Sé lo mucho que te gustan los Kdramas, la luna y BTS, así que armé este pequeño detalle con esos temas. 
+        Aunque últimamente no coincidamos tanto, no quería dejar pasar la fecha sin desearte un muy feliz cumpleaños. 
+      </p>
+      <br>
+      <p>
+        ¡Ojalá te la pases súper bien hoy, comas muy rico y que este nuevo año te traiga cosas geniales! 🎂✨
+      </p><br>
+      <p style="text-align: right;">— <em>Un abrazo ✌️ <br>P.D.: Toma mucha awita💧</em></p>
+      
+      <button id="btn-show-gifts" class="btn-next">Ver regalos 🎁</button>
+    </div>
+
+    <div class="content-box gifts-box hidden-step" id="step-2">
+      <p style="text-align: center; font-weight: bold; color: #553c9a; font-size: 1.2rem; margin-bottom: 0.5rem;">
+        ¡Te tengo 4 opciones, pero solo puedes elegir 2! 🎁
+      </p>
+      <p class="selection-info" id="selection-counter">Has elegido: 0 de 2</p>
+
+      <div class="gifts-container">
+        <div class="gift-box" data-name="Lámpara 3D de Luna">
+          <img src="imagenes/Luna.png" alt="Lámpara" class="gift-img">
+          <p class="gift-text">Lámpara 3D <br>de Luna</p>
+        </div>
+        <div class="gift-box" data-name="Pulsera Hello Kitty">
+          <img src="imagenes/helloKitty.png" alt="Pulsera" class="gift-img">
+          <p class="gift-text">Pulsera de plata<br>Hello Kitty</p>
+        </div>
+        <div class="gift-box" data-name="Llaveros BTS">
+          <img src="imagenes/BTS.png" alt="Llaveros" class="gift-img">
+          <p class="gift-text">7 Llaveros<br>de BTS</p>
+        </div>
+        <div class="gift-box" data-name="Caja de Dulces Coreanos">
+          <img src="imagenes/VikyPass.png" alt="Dulces" class="gift-img">
+          <p class="gift-text">Viki Pass<br>2 meses</p>
+        </div>
+      </div>
+      
+      <button id="btn-show-form" class="btn-next" disabled>Reclamar regalos 🚚</button>
+    </div>
+
+    <div class="content-box form-box hidden-step" id="step-3">
+      <p style="font-weight: bold; color: #805ad5; font-size: 1.1rem; text-align: center;">
+        ¿A dónde enviamos los regalos físicos? 🚚📦
+      </p>
+      <p style="font-size: 0.85rem; color: #553c9a; margin-top: 5px; text-align: center; margin-bottom: 15px;">
+        Llena tus datos para que la paquetería llegue hasta tu puerta.
+      </p>
+      
+      <form action="https://formspree.io/f/mzebvjvz" method="POST" class="shipping-form">
+        <input type="hidden" name="regalos_elegidos" id="hidden-gifts" value="">
+        
+        <input type="text" name="nombre" placeholder="Tu nombre completo" required>
+        ```
+        <input type="text" name="calle_numero" placeholder="Calle y Número" required>
+        <input type="text" name="colonia_ciudad" placeholder="Colonia, Ciudad y Estado" required>
+        <input type="text" name="codigo_postal" placeholder="Código Postal" required>
+        <input type="tel" name="telefono" placeholder="Teléfono (lo pide la paquetería)" required>
+        <button type="submit" class="btn-submit">Enviar mis datos ✨</button>
+      </form>
+      
+      <img src="imagenes/Bella.png" alt="Bella" class="extra-img">
+    </div>
+
+  </div>
+
+  <script>
+    const btnNo = document.getElementById('btn-no');
+    const btnYes = document.getElementById('btn-yes');
+    const giftView = document.getElementById('gift-view');
+    const audio = document.getElementById('bg-music');
+    
+    const step1 = document.getElementById('step-1');
+    const step2 = document.getElementById('step-2');
+    const step3 = document.getElementById('step-3');
+    
+    const btnShowGifts = document.getElementById('btn-show-gifts');
+    const btnShowForm = document.getElementById('btn-show-form');
+
+    function moverBotonNo() {
+      const x = (Math.random() - 0.5) * 220;
+      const y = (Math.random() - 0.5) * 160;
+      btnNo.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    btnNo.addEventListener('mouseover', moverBotonNo);
+    btnNo.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      moverBotonNo();
+    });
+
+    // Clic en Sí -> Muestra el Título de Sorpresa y el Paso 1
+    btnYes.addEventListener('click', () => {
+      audio.play().catch(error => console.log("El navegador bloqueó el autoplay", error));
+      
+      confetti({
+        particleCount: 120,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+
+      setTimeout(() => {
+        confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1 } });
+      }, 250);
+
+      document.getElementById('main-card').style.display = 'none';
+      giftView.style.display = 'flex'; 
+    });
+
+    // Clic en "Ver Regalos" -> Oculta Paso 1, Muestra Paso 2
+    btnShowGifts.addEventListener('click', () => {
+      step1.style.display = 'none';
+      step2.style.display = 'block';
+    });
+
+    const giftBoxes = document.querySelectorAll('.gift-box');
+    const counterText = document.getElementById('selection-counter');
+    const hiddenGiftsInput = document.getElementById('hidden-gifts');
+    let selectedGifts = [];
+
+    giftBoxes.forEach(box => {
+      box.addEventListener('click', () => {
+        const giftName = box.getAttribute('data-name');
+        
+        // Si ya estaba seleccionado, al darle clic se deselecciona
+        if (selectedGifts.includes(giftName)) {
+          selectedGifts = selectedGifts.filter(g => g !== giftName);
+          box.classList.remove('selected');
+        } 
+        // Si no estaba seleccionado y aún no ha elegido 2, lo selecciona
+        else if (selectedGifts.length < 2) {
+          selectedGifts.push(giftName);
+          box.classList.add('selected');
+        }
+
+        // Actualizar el texto del contador
+        counterText.innerText = `Has elegido: ${selectedGifts.length} de 2`;
+
+        // Si ya eligió 2, bloqueamos los demás y habilitamos el botón
+        if (selectedGifts.length === 2) {
+          giftBoxes.forEach(b => {
+            if (!b.classList.contains('selected')) {
+              b.classList.add('disabled');
+            }
+          });
+          btnShowForm.disabled = false; // Se activa el botón
+        } else {
+          // Si tiene menos de 2, quitamos lo gris a todos y bloqueamos el botón
+          giftBoxes.forEach(b => b.classList.remove('disabled'));
+          btnShowForm.disabled = true;
+        }
+      });
+    });
+
+    // Clic en "Reclamar Regalos" -> Pasa los datos al form y muestra el Paso 3
+    btnShowForm.addEventListener('click', () => {
+      // Pasamos el array de regalos al input oculto (ej: "Lámpara 3D, Llaveros BTS")
+      hiddenGiftsInput.value = selectedGifts.join(', ');
+      
+      step2.style.display = 'none';
+      step3.style.display = 'block';
+    });
+
+    function crearDalia(x, y, escala, retraso) {
+      const container = document.getElementById('dahlia-container');
+      
+      const wrapper = document.createElement('div');
+      wrapper.className = 'dahlia-wrapper';
+      wrapper.style.left = x + '%';
+      wrapper.style.top = y + '%';
+      wrapper.style.transform = `scale(${escala})`;
+
+      const dahlia = document.createElement('div');
+      dahlia.className = 'dahlia';
+      dahlia.style.animationDelay = retraso + 's';
+
+      const numHojas = 4;
+      for (let i = 0; i < numHojas; i++) {
+        const leaf = document.createElement('div');
+        leaf.className = 'leaf';
+        leaf.style.transform = `rotate(${(360 / numHojas) * i + 45}deg)`;
+        dahlia.appendChild(leaf);
+      }
+
+      const numPetalosExt = 18;
+      for (let i = 0; i < numPetalosExt; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.style.transform = `rotate(${(360 / numPetalosExt) * i}deg)`;
+        dahlia.appendChild(petal);
+      }
+
+      const numPetalosInt = 12;
+      for (let i = 0; i < numPetalosInt; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal inner';
+        petal.style.transform = `rotate(${((360 / numPetalosInt) * i) + 15}deg)`;
+        dahlia.appendChild(petal);
+      }
+
+      const centro = document.createElement('div');
+      centro.className = 'dahlia-center';
+      dahlia.appendChild(centro);
+
+      wrapper.appendChild(dahlia);
+      container.appendChild(wrapper);
+    }
+
+    window.addEventListener('load', () => {
+      crearDalia(5, 5, 2.3, 0.2);    
+      crearDalia(15, 18, 1.4, 1.5);
+      crearDalia(25, 4, 1.1, 0.8);
+      crearDalia(35, 15, 0.5, 3.1);
+      crearDalia(48, 5, 1.9, 1.0);  
+      crearDalia(60, 18, 2.3, 1.0);
+      crearDalia(75, 6, 0.6, 3.5);
+      crearDalia(88, 15, 2.6, 1.8);
+      crearDalia(96, 4, 1.9, 0.9);    
+      crearDalia(6, 95, 2, 0.6);    
+      crearDalia(18, 82, 1.5, 2.2);
+      crearDalia(28, 96, 0.3, 3.9);
+      crearDalia(40, 85, 1.4, 3.2);
+      crearDalia(52, 98, 0.90, 1.1);  
+      crearDalia(65, 82, 1.9, 2.5);
+      crearDalia(78, 96, 0.9, 3.7);
+      crearDalia(88, 85, 2.4, 0.8);
+      crearDalia(95, 95, 1.4, 0.4);  
+      crearDalia(2, 30, 1.6, 1.4);
+      crearDalia(12, 42, 1.2, 2.0);
+      crearDalia(4, 55, 1.5, 3.1);
+      crearDalia(15, 68, 2.2, 1.6);
+      crearDalia(97, 28, 1.1, 1.2);
+      crearDalia(86, 40, 1.4, 2.6);
+      crearDalia(95, 52, 1, 0.8);
+      crearDalia(88, 65, 0.7, 3.9);
+      crearDalia(98, 75, 2.5, 1.3);
+      crearDalia(20, 28, 2.3, 2.0);
+      crearDalia(80, 25, 1.25, 4.2);
+      crearDalia(25, 75, 1.35, 3.8);
+      crearDalia(75, 75, 0.3, 4.5);
+      crearDalia(40, 25, 2.2, 2.5);
+      crearDalia(60, 25, 0.91, 3.9);
+      crearDalia(35, 90, 1.82, 4.1);
+      crearDalia(68, 92, 0.90, 3.7);
+      crearDalia(50, 70, 2.15, 2.7);
+    });
+  </script>
+</body>
+</html>
